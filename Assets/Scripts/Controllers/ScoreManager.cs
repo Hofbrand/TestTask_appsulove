@@ -30,4 +30,14 @@ public class ScoreManager
         _distance += distance;
         OnDistanceChanged.Invoke(_distance);
     }
+
+    internal float GetDistance()
+    {
+        return _distance;
+    }
+
+    internal int GetPoints()
+    {
+        return _score;
+    }
 }

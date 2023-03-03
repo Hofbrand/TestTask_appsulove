@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ScoreView scoreView; 
     private AbstractSpawner<GameObject> circleSpawner;
     private AbstractSpawner<GameObject> squareSpawner;
+    private SaveLoadSystem saveLoadSystem;
     private ScoreManager score;
     private InputManager input;
     private CircleView circle;
@@ -20,7 +21,16 @@ public class GameManager : MonoBehaviour
         circleSpawner = GetComponent<CircleSpawner>();
         squareSpawner = GetComponent<SquareSpawner>();
         score = new ScoreManager(scoreView);
-        input = new InputManager(); 
+        input = new InputManager();
+        saveLoadSystem = new SaveLoadSystem();
+        SaveData data = saveLoadSystem.LoadData();
+
+        if (data != null)
+        {
+            score.AddPoints(data.points);
+            score.AddDistance(data.distance);
+        }
+
         circle = circleSpawner.Spawn(storage.CirclePrefab).GetComponent<CircleView>();
         circleController = new CircleController( new CircleModel(), circle, score);
         InvokeRepeating(nameof(SpawnSquare), 3f, 3f);
@@ -48,5 +58,11 @@ public class GameManager : MonoBehaviour
         var view = squareSpawner.Spawn(storage.SquarePrefab).GetComponent<SquareView>() ;
         SquareController square = new SquareController(view, new SquareModel(10), score);
         square.OnDestroy += ((SquareSpawner)squareSpawner).RemoveFromList;
+    }
+
+    private void OnApplicationQuit()
+    {
+        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
+        saveLoadSystem.SaveData();
     }
 }
