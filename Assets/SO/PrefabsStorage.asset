@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10ecc9592ea39c24fb38618087430709, type: 3}
   m_Name: PrefabsStorage
   m_EditorClassIdentifier: 
-  squarePrefab: {fileID: 0}
-  circlePrefab: {fileID: 0}
+  squarePrefab: {fileID: 508018639639186896, guid: 37ee5aa95cb90c44ba16bade380d271f, type: 3}
+  circlePrefab: {fileID: 5633382523894590326, guid: 3e9002056f884b741b0966f93f0f0196, type: 3}
