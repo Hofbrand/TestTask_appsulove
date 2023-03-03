@@ -16,11 +16,4 @@ public class CircleView : MonoBehaviour, IPointerClickHandler
     {
         transform.position = currentPosition;
     }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

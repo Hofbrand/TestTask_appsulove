@@ -1,11 +1,15 @@
 using Assets.Scripts.Controllers;
+using Assets.Scripts.Views;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private PrefabsStorage storage;
+    [SerializeField] private ScoreView scoreView; 
     private AbstractSpawner<GameObject> circleSpawner;
     private AbstractSpawner<GameObject> squareSpawner;
+    private ScoreManager score;
     private InputManager input;
     private CircleView circle;
     private CircleController circleController;
@@ -15,7 +19,7 @@ public class GameManager : MonoBehaviour
     {
         circleSpawner = GetComponent<CircleSpawner>();
         squareSpawner = GetComponent<SquareSpawner>();
-
+        score = new ScoreManager(scoreView);
         input = new InputManager(); 
         circle = circleSpawner.Spawn(storage.CirclePrefab).GetComponent<CircleView>();
         circleController = new CircleController( new CircleModel(), circle);
@@ -39,7 +43,10 @@ public class GameManager : MonoBehaviour
 
     private void SpawnSquare()
     {
+        
         Debug.LogError("should spawn");
-        squareSpawner.Spawn(storage.SquarePrefab);
+        var view = squareSpawner.Spawn(storage.SquarePrefab).GetComponent<SquareView>() ;
+        SquareController square = new SquareController(view, new SquareModel(10), score);
+        square.OnDestroy += ((SquareSpawner)squareSpawner).RemoveFromList;
     }
 }

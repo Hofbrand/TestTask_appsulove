@@ -45,4 +45,10 @@ public class SquareSpawner : AbstractSpawner<GameObject>
         }
         return false;
     }
+
+    public void RemoveFromList(GameObject go)
+    {
+        squaresCount--;
+        squares.Remove(go);
+    }
 }
