@@ -1,6 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.Android;
 
 public class SaveLoadSystem
 {
@@ -9,7 +10,7 @@ public class SaveLoadSystem
 
     public SaveLoadSystem()
     {
-        saveFilePath = Application.persistentDataPath + "/saveData.dat";
+        saveFilePath = Application.persistentDataPath + "/saveData.txt";
     }
 
     public void SetData(float distance, int points)
@@ -19,12 +20,10 @@ public class SaveLoadSystem
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(saveFilePath);
+        FileStream file = new FileStream(saveFilePath, FileMode.Create); 
 
         bf.Serialize(file, data);
         file.Close();
-
-        Debug.Log("Data saved to " + saveFilePath);
     }
 
     public SaveData LoadData()
@@ -39,7 +38,6 @@ public class SaveLoadSystem
             file.Close();
 
             return data;
-            Debug.Log("Data loaded from " + saveFilePath);
         }
         else
         {

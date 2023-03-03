@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Controllers
 {
@@ -13,7 +14,7 @@ namespace Assets.Scripts.Controllers
 
         public Vector2 Move(Vector2 currentPosition, float deltaTime, Vector2 target)
         {
-            return Vector2.MoveTowards(currentPosition, target, speed * deltaTime); ;
+            return Vector2.MoveTowards(currentPosition, target, speed * deltaTime); 
         }
     }
 }

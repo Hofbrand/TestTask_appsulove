@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private CircleView circle;
     private CircleController circleController;
     private Vector2 target;
-
+ 
     void Start()
     {
         circleSpawner = GetComponent<CircleSpawner>();
@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
         input = new InputManager();
         saveLoadSystem = new SaveLoadSystem();
         SaveData data = saveLoadSystem.LoadData();
+
 
         if (data != null)
         {
@@ -39,9 +40,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchCount > 0)
         {
-            circleController.StartMovemnt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            circleController.StartMovement(input.GetTouchPosition());
         }
     }
 
@@ -49,6 +50,8 @@ public class GameManager : MonoBehaviour
     {
 
         circleController.MoveCircle(Time.deltaTime);
+        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
+        saveLoadSystem.SaveData();
     }
 
     private void SpawnSquare()
@@ -60,6 +63,11 @@ public class GameManager : MonoBehaviour
         square.OnDestroy += ((SquareSpawner)squareSpawner).RemoveFromList;
     }
 
+    private void OnDisable()
+    {
+        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
+        saveLoadSystem.SaveData();
+    }
     private void OnApplicationQuit()
     {
         saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
