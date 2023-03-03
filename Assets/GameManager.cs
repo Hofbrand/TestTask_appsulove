@@ -1,6 +1,4 @@
 using Assets.Scripts.Controllers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,16 +6,32 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PrefabsStorage storage;
     private AbstractSpawner<GameObject> circleSpawner;
     private AbstractSpawner<GameObject> squareSpawner;
+    private InputManager input;
+    private CircleView circle;
+    private CircleController circleController;
+    private Vector2 target;
+    private 
 
     void Start()
     {
         circleSpawner = GetComponent<CircleSpawner>();
-        circleSpawner.Spawn(storage.CirclePrefab, Vector3.zero);
+        input = new InputManager(); 
+        circle = circleSpawner.Spawn(storage.CirclePrefab, Vector3.zero).GetComponent<CircleView>();
+        circleController = new CircleController( new CircleModel(), circle);
+        
+    }
+    private void Update()
+    {
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            circleController.StartMovemnt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-        
+
+        circleController.MoveCircle(Time.deltaTime);
     }
 }
