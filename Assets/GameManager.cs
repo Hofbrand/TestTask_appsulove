@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         score = new ScoreManager(scoreView);
         input = new InputManager(); 
         circle = circleSpawner.Spawn(storage.CirclePrefab).GetComponent<CircleView>();
-        circleController = new CircleController( new CircleModel(), circle);
+        circleController = new CircleController( new CircleModel(), circle, score);
         InvokeRepeating(nameof(SpawnSquare), 3f, 3f);
         
     }

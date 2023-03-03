@@ -9,13 +9,15 @@ namespace Assets.Scripts.Controllers
         private CircleModel circleModel;
         private CircleView circleView;
         private MovementBehaviour moveBehaviour;
+        private ScoreManager scoreManager;
         private float speed = 5f;
        
 
-        public CircleController(CircleModel model, CircleView view)
+        public CircleController(CircleModel model, CircleView view, ScoreManager score)
         {
             circleModel = model;
             circleView = view;
+            scoreManager = score;
             moveBehaviour = new MovementBehaviour(speed);
             view.OnCircleClicked += Stop;
         }
@@ -30,8 +32,13 @@ namespace Assets.Scripts.Controllers
 
             if (circleModel.Target != null)
             {
+                var previousPosition = circleView.transform.position;
                 var currentPosition = moveBehaviour.Move(circleView.transform.position, deltaTime, circleModel.Target.Value);
                 circleModel.SetCurrentPosition(currentPosition);
+                Debug.LogError(scoreManager);
+                Debug.Log(previousPosition);
+
+                scoreManager.AddDistance(Vector2.Distance(previousPosition, currentPosition));
                 circleView.UpdatePosition(currentPosition);
             }
            
@@ -39,6 +46,7 @@ namespace Assets.Scripts.Controllers
 
         public void StartMovemnt(Vector2 newTarget)
         {
+            circleModel.Distance = Vector2.Distance(newTarget, circleView.transform.position);
             circleModel.Target = newTarget;
             circleModel.IsMoving = true;
         }

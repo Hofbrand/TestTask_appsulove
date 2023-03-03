@@ -13,5 +13,10 @@ namespace Assets.Scripts.Views
         {
             score.SetText(newScore.ToString());
         }
+
+        public void UpdateDistance(float obj)
+        {
+            distance.SetText(obj.ToString());
+        }
     }
 }
