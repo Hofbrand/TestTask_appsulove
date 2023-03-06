@@ -6,6 +6,8 @@ namespace Views
 {
     public class CircleView : BaseView, IPointerClickHandler
     {
+        [SerializeField] public float Speed;
+
         public Action OnCircleClicked;
        
         public void OnPointerClick(PointerEventData eventData)

@@ -10,12 +10,11 @@ namespace Controllers
     {
         public Action<float> OnPositionChanged;
         private MovementBehaviour moveBehaviour;
-        private float maxSpeed = 5f;
-        private float currentSpeed = 0f;
-       
+
         public CircleController(CircleModel model, CircleView view) : base(model, view) 
         {
             moveBehaviour = new MovementBehaviour();
+            model.MaxSpeed = view.Speed;
             view.OnCircleClicked += Stop;
         }
 
@@ -40,7 +39,6 @@ namespace Controllers
               
                 var previousPosition = view.transform.position;
                 var currentPosition = moveBehaviour.Move(view.transform.position, deltaTime, model.Target.Value, GetSpeed(model.ElapsedDistance));
-
                 OnPositionChanged.Invoke(Vector2.Distance(previousPosition, currentPosition));
                 model.ElapsedDistance += Vector2.Distance(previousPosition, currentPosition);
 
@@ -77,11 +75,11 @@ namespace Controllers
         {
             if (elapsedDistance <= model.TotalDistance / 2f)
             {
-                return  Mathf.Lerp( 0.2f , maxSpeed, elapsedDistance / model.TotalDistance * 2f);
+                return  Mathf.Lerp( 0.2f , model.MaxSpeed, elapsedDistance / model.TotalDistance * 2f);
             }
             else
             {
-                return  Mathf.Lerp( maxSpeed, 0.2f, (elapsedDistance - model.TotalDistance / 2f) / model.TotalDistance * 2f);
+                return  Mathf.Lerp( model.MaxSpeed, 0.2f, (elapsedDistance - model.TotalDistance / 2f) / model.TotalDistance * 2f);
             }
         }
 
