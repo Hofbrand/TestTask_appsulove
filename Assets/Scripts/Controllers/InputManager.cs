@@ -1,44 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-namespace Assets.Scripts.Controllers
+namespace Controllers
 {
     public class InputManager
     {
-        public Vector2 GetTouchPosition()
-        {
+        private Action<List<Vector2>> OnInputHandled;
+        public List<Vector2> TouchPositions = new();
 
+        private Vector2 GetTouchPosition()
+        {
             return Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
         }
 
-        public List<Vector2> GetTouches() 
+        public InputManager(CircleController circleController)
         {
-            var _touchPositions = new List<Vector2>();
-            Vector2 _startTouchPosition;
-            Vector2 _lastTouchPosition = Vector2.zero;
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began)
-            {
-                _startTouchPosition = touch.position;
-                _lastTouchPosition = touch.position;
-                _touchPositions.Clear();
-            }
-            else if (touch.phase == TouchPhase.Moved)
-            {
-                Vector2 delta = touch.position - _lastTouchPosition;
-                _touchPositions.Add(delta);
-                _lastTouchPosition = touch.position;
-            }
-            else if (touch.phase == TouchPhase.Ended)
-            {
-                Vector2 delta = touch.position - _lastTouchPosition;
-                _touchPositions.Add(delta);
-                _lastTouchPosition = touch.position;
+            OnInputHandled += circleController.StartMovement;
+        }
 
+        public void HandleInput(float deltaTIme)
+        {
+            if (Input.touchCount > 0)
+            {
+                if (Input.GetTouch(0).phase == TouchPhase.Began)
+                {
+                    TouchPositions.Clear();
+                    TouchPositions.Add(GetTouchPosition());
+                }
+                else if (Input.GetTouch(0).phase == TouchPhase.Moved)
+                {
+                   TouchPositions.Add(GetTouchPosition());
+                }
+                else if (Input.GetTouch(0).phase == TouchPhase.Ended)
+                {
+                    OnInputHandled.Invoke(TouchPositions);
+                }
             }
 
-            return _touchPositions;
         }
     }
 }

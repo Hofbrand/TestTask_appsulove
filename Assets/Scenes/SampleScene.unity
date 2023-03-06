@@ -201,8 +201,8 @@ GameObject:
   m_Component:
   - component: {fileID: 198674612}
   - component: {fileID: 198674611}
-  - component: {fileID: 198674613}
   - component: {fileID: 198674614}
+  - component: {fileID: 198674615}
   m_Layer: 0
   m_Name: EntryPoint
   m_TagString: Untagged
@@ -222,7 +222,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba671320792b5d848a764d86b4e7e163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storage: {fileID: 11400000, guid: 724d06f23f070b6429c5df609cb712c3, type: 2}
   scoreView: {fileID: 379415350}
 --- !u!4 &198674612
 Transform:
@@ -239,18 +238,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &198674613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 198674610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5169a873a55100a428b937f92feea31e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &198674614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +250,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f09f4f49617133e4a84d00925ed76490, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  storage: {fileID: 11400000, guid: 724d06f23f070b6429c5df609cb712c3, type: 2}
+  spawnOffset: 1
+  view: {fileID: -2343186567079305007, guid: 37ee5aa95cb90c44ba16bade380d271f, type: 3}
+  spawnDelay: 1
+  points: 10
+  maxSquares: 10
+--- !u!114 &198674615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198674610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5169a873a55100a428b937f92feea31e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storage: {fileID: 11400000, guid: 724d06f23f070b6429c5df609cb712c3, type: 2}
+  spawnOffset: 1
 --- !u!1 &379415345
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,13 +573,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -701,14 +708,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_fontStyle: 1
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -719,7 +726,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1

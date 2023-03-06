@@ -1,59 +1,55 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.Android;
 
-public class SaveLoadSystem
+namespace Controllers
 {
-    private SaveData data;
-    private string saveFilePath;
-
-    public SaveLoadSystem()
+    public class SaveLoadSystem
     {
-        saveFilePath = Application.persistentDataPath + "/saveData.txt";
-    }
+        private string saveFilePath;
 
-    public void SetData(float distance, int points)
-    {
-        data = new SaveData(distance, points);
-    }
-    public void SaveData()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = new FileStream(saveFilePath, FileMode.Create); 
+        public Action<SaveData> OnDataLoaded;
 
-        bf.Serialize(file, data);
-        file.Close();
-    }
+        public SaveLoadSystem()
+        {
+            saveFilePath = Application.persistentDataPath + "/saveData.txt";
+        }
 
-    public SaveData LoadData()
-    {
-        if (File.Exists(saveFilePath))
+        public void SaveData(SaveData data)
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(saveFilePath, FileMode.Open);
+            FileStream file = new FileStream(saveFilePath, FileMode.Create);
 
-            SaveData data = (SaveData)bf.Deserialize(file);
-
+            bf.Serialize(file, data);
             file.Close();
-
-            return data;
         }
-        else
+
+        public void LoadData()
         {
-            return null;
+            if (File.Exists(saveFilePath))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream file = File.Open(saveFilePath, FileMode.Open);
+
+                SaveData data = (SaveData)bf.Deserialize(file);
+
+                file.Close();
+                OnDataLoaded(data);
+            }
         }
     }
-}
-   
-[System.Serializable]
-public class SaveData
-{
-    public float distance;
-    public int points;
 
-    public SaveData(float distance, int points) {
-        this.distance = distance;
-        this.points = points;
+    [System.Serializable]
+    public class SaveData
+    {
+        public float distance;
+        public int points;
+
+        public SaveData(float distance, int points)
+        {
+            this.distance = distance;
+            this.points = points;
+        }
     }
 }

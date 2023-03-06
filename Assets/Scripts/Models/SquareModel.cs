@@ -1,9 +1,8 @@
-public class SquareModel
+namespace Models
 {
-    public int Points { get; private set; }
-
-    public SquareModel(int points)
+    public class SquareModel : BaseModel
     {
-        Points = points;
     }
 }
+
+

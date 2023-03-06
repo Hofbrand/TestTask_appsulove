@@ -1,25 +1,22 @@
+using Models;
 using System;
 using UnityEngine;
+using Views;
 
-public class SquareController 
+namespace Controllers
 {
-    public Action<GameObject> OnDestroy;
-    private SquareView view;
-    private SquareModel model;
-    private ScoreManager score;
-
-    public SquareController(SquareView view, SquareModel model, ScoreManager scoreManager)
+    public class SquareController : BaseController<SquareModel, SquareView>
     {
-        this.view = view;
-        this.model = model;
-        this.score = scoreManager;
-        view.OnCollision += Destroy;
-    }
+        public Action<GameObject> OnDestroy;
+        public SquareController(SquareModel model, SquareView view) : base(model, view)
+        {
+            view.OnCollision += Destroy;
+        }
 
-    private void Destroy()
-    {
-        score.AddPoints(model.Points);
-        OnDestroy.Invoke(view.gameObject);
+        private void Destroy()
+        {
+            OnDestroy.Invoke(view.gameObject);
+        }
     }
-
 }
+

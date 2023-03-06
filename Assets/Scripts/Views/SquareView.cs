@@ -1,18 +1,19 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SquareView : MonoBehaviour
+namespace Views
 {
-    public Action OnCollision;
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public class SquareView : BaseView
     {
-        if (collision.GetComponent<CircleView>())
+        public Action OnCollision;
+
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            OnCollision.Invoke();
-            Destroy(gameObject);
+            if (collision.GetComponent<CircleView>())
+            {
+                OnCollision.Invoke();
+                Destroy(gameObject);
+            }
         }
     }
 }

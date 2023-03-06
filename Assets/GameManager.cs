@@ -1,76 +1,46 @@
-using Assets.Scripts.Controllers;
-using Assets.Scripts.Views;
-using UnityEditor;
+using Controllers;
+using Views;
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private PrefabsStorage storage;
-    [SerializeField] private ScoreView scoreView; 
-    private AbstractSpawner<GameObject> circleSpawner;
-    private AbstractSpawner<GameObject> squareSpawner;
+    [SerializeField] private ScoreView scoreView;
+    private Action<float> OnUpdate;
+
     private SaveLoadSystem saveLoadSystem;
-    private ScoreManager score;
     private InputManager input;
-    private CircleView circle;
-    private CircleController circleController;
-    private Vector2 target;
+    private ScoreManager score;
  
     void Start()
     {
-        circleSpawner = GetComponent<CircleSpawner>();
-        squareSpawner = GetComponent<SquareSpawner>();
-        score = new ScoreManager(scoreView);
-        input = new InputManager();
-        saveLoadSystem = new SaveLoadSystem();
-        SaveData data = saveLoadSystem.LoadData();
-
-
-        if (data != null)
-        {
-            score.AddPoints(data.points);
-            score.AddDistance(data.distance);
-        }
-
-        circle = circleSpawner.Spawn(storage.CirclePrefab).GetComponent<CircleView>();
-        circleController = new CircleController( new CircleModel(), circle, score);
-        InvokeRepeating(nameof(SpawnSquare), 3f, 3f);
-        
+        InitGame(); 
     }
+
+    private void InitGame()
+    {  
+        CircleSpawner circleSpawner = GetComponent<CircleSpawner>();
+        CircleController circleController = circleSpawner.Spawn();
+        SquareSpawner squareSpawner = GetComponent<SquareSpawner>();
+        squareSpawner.SpawnSquares();
+
+        score = new ScoreManager(scoreView);
+        input = new InputManager(circleController);
+        saveLoadSystem = new SaveLoadSystem();
+
+        OnUpdate += input.HandleInput;
+        OnUpdate += circleController.Update;
+        circleController.OnPositionChanged += score.UpdateDistance;
+        squareSpawner.OnDestroySquare += score.UpdatePoints;
+
+        saveLoadSystem.OnDataLoaded += score.UpdateData;
+        score.OnDataChanged = saveLoadSystem.SaveData;
+     
+        saveLoadSystem.LoadData();
+    }
+
     private void Update()
     {
-
-        if (Input.touchCount > 0)
-        {
-            circleController.StartMovement(input.GetTouchPosition());
-        }
-    }
-
-    private void FixedUpdate()
-    {
-
-        circleController.MoveCircle(Time.deltaTime);
-        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
-        saveLoadSystem.SaveData();
-    }
-
-    private void SpawnSquare()
-    {
-        
-        Debug.LogError("should spawn");
-        var view = squareSpawner.Spawn(storage.SquarePrefab).GetComponent<SquareView>() ;
-        SquareController square = new SquareController(view, new SquareModel(10), score);
-        square.OnDestroy += ((SquareSpawner)squareSpawner).RemoveFromList;
-    }
-
-    private void OnDisable()
-    {
-        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
-        saveLoadSystem.SaveData();
-    }
-    private void OnApplicationQuit()
-    {
-        saveLoadSystem.SetData(score.GetDistance(), score.GetPoints());
-        saveLoadSystem.SaveData();
+        OnUpdate.Invoke(Time.deltaTime);
     }
 }

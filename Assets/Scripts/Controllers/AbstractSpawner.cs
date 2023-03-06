@@ -1,32 +1,58 @@
-using System.Threading;
+using Models;
+using Views;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.Controllers
+namespace Controllers
 {
-    public abstract class AbstractSpawner<T> : MonoBehaviour where T : Object
+    public abstract class AbstractSpawner<TController, TView, TModel> : MonoBehaviour 
+        where TController : BaseController <TModel, TView>
+        where TView : IView
+        where TModel : BaseModel
     {
-        private float screenWidth;
-        private float screenHeight;
+        [SerializeField] protected PrefabsStorage storage;
+        [SerializeField] private float spawnOffset;
+
+        protected List<Transform> gameObjects = new();
+        protected float screenWidth;
+        protected float screenHeight;
 
         private void Start()
-        {
+        { 
             screenHeight = Camera.main.orthographicSize * 2f;
             screenWidth = screenHeight * Screen.width / Screen.height;
         }
 
-        public T Spawn(T objectToSpawn)
+        protected abstract TController CreateController(TView view);
+        protected abstract GameObject GetSpawnObjectFromStorage();
+
+        public virtual TController Spawn()
         {
             if (SpawnFilter())
             {
-                return IncreaseAmount(CreateInstance(objectToSpawn, GetRandomPosition()));
+                var instance = CreateInstance();
+                TView view = instance.GetComponent<TView>();
+                var controller = CreateController(view);
+                gameObjects.Add(instance.transform);
+
+                return controller;
             }
 
             return null;
         }
 
-        private T CreateInstance(T objectToSpawn, Vector3 spawnPosition) 
+        private GameObject CreateInstance()
         {
-            return Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
+            var prefab = GetSpawnObjectFromStorage();
+            var position = GetRandomPosition();
+            return Instantiate(prefab, position, Quaternion.identity);
+        }
+
+        private Vector2 GetRandomPosition()
+        {
+            float x = Random.Range(-screenWidth / 2f + spawnOffset, screenWidth / 2f - spawnOffset);
+            float y = Random.Range(-screenHeight / 2f + spawnOffset, screenHeight / 2f - spawnOffset);
+            return PositionFilter(new Vector2(x, y));
         }
 
         protected virtual bool SpawnFilter()
@@ -34,19 +60,26 @@ namespace Assets.Scripts.Controllers
             return true;
         }
 
-        protected virtual T IncreaseAmount(T go) { return go; }
-
-        protected Vector2 GetRandomPosition()
+        private Vector2 PositionFilter(Vector2 vector2)
         {
+            while (IsPositionOccupied(vector2))
+            {
+                vector2 = GetRandomPosition();
+            }
 
-            float x = Random.Range(-screenWidth / 2f + 1/ 2f, screenWidth / 2f - 1/ 2f);
-            float y = Random.Range(-screenHeight / 2f + 1 / 2f, screenHeight / 2f - 1/ 2f);
-            return PositionFilter(new Vector2(x, y));
+            return vector2;
         }
 
-        protected virtual Vector2 PositionFilter(Vector2 vector2)
+        private bool IsPositionOccupied(Vector2 position)
         {
-            return vector2;
+            foreach (var transform in gameObjects)
+            {
+                if (Vector2.Distance(transform.position, position) < spawnOffset)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

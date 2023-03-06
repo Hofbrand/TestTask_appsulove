@@ -1,8 +1,19 @@
+using Models;
 using UnityEngine;
+using Views;
 
-namespace Assets.Scripts.Controllers
+namespace Controllers
 {
-    public class CircleSpawner : AbstractSpawner<GameObject>
+    public class CircleSpawner : AbstractSpawner<CircleController, CircleView, CircleModel>
     {
+        protected override CircleController CreateController(CircleView view)
+        {
+            return new CircleController(new CircleModel(), view);
+        }
+
+        protected override GameObject GetSpawnObjectFromStorage()
+        {
+            return storage.CirclePrefab;
+        }
     }
 }

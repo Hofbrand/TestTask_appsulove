@@ -1,54 +1,48 @@
-using Assets.Scripts.Controllers;
-using System.Collections.Generic;
+using Models;
 using UnityEngine;
+using Views;
 
-public class SquareSpawner : AbstractSpawner<GameObject>
+namespace Controllers
 {
-    private int squaresCount = 0;
-    private readonly int maxSquares = 10;
-    private List<GameObject> squares = new List<GameObject>();
-
-    protected override bool SpawnFilter()
+    public class SquareSpawner : AbstractSpawner<SquareController, SquareView, SquareModel>
     {
-        Debug.LogError("SpawnFilter " + squaresCount + " " + maxSquares);
-        if (squaresCount >= maxSquares)
-            return false;
+        [SerializeField] private SquareView view;
+        [SerializeField] private int spawnDelay;
+        [SerializeField] private int points;
+        [SerializeField] private int maxSquares = 10;
 
-        return true;
-    }
+        public System.Action<int> OnDestroySquare;
 
-    protected override GameObject IncreaseAmount(GameObject go)
-    {
-        squaresCount++;
-        squares.Add(go);
-        return base.IncreaseAmount(go);
-    }
-
-    protected override Vector2 PositionFilter(Vector2 vector2)
-    {
-        while ( IsPositionOccupied(vector2))
+        protected override bool SpawnFilter()
         {
-            vector2 = GetRandomPosition();
+            if (gameObjects.Count - 1 >= maxSquares)
+                return false;
+
+            return true;
         }
 
-        return vector2;
-    }
-
-    private bool IsPositionOccupied(Vector2 position)
-    {
-        foreach (GameObject square in squares)
+        public void SpawnSquares()
         {
-            if (Vector2.Distance(square.transform.position, position) < 1f)
-            {
-                return true;
-            }
+            InvokeRepeating(nameof(Spawn), spawnDelay, spawnDelay);
         }
-        return false;
-    }
 
-    public void RemoveFromList(GameObject go)
-    {
-        squaresCount--;
-        squares.Remove(go);
+        public void RemoveFromList(GameObject go)
+        {
+            OnDestroySquare.Invoke(points);
+            gameObjects.Remove(go.transform);
+        }
+
+        protected override SquareController CreateController(SquareView view)
+        {
+            var square = new SquareController(new SquareModel(), view);
+            square.OnDestroy += RemoveFromList;
+            return square;
+        }
+
+        protected override GameObject GetSpawnObjectFromStorage()
+        {
+            return storage.SquarePrefab;
+        }
     }
 }
+
