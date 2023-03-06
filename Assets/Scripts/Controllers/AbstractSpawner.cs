@@ -16,15 +16,14 @@ namespace Controllers
         protected List<Transform> gameObjects = new();
         protected float screenWidth;
         protected float screenHeight;
+        protected abstract TController CreateController(TView view);
+        protected abstract GameObject GetSpawnObjectFromStorage();
 
         private void Start()
         { 
             screenHeight = Camera.main.orthographicSize * 2f;
             screenWidth = screenHeight * Screen.width / Screen.height;
         }
-
-        protected abstract TController CreateController(TView view);
-        protected abstract GameObject GetSpawnObjectFromStorage();
 
         public virtual TController Spawn()
         {
@@ -79,6 +78,7 @@ namespace Controllers
                     return true;
                 }
             }
+
             return false;
         }
     }

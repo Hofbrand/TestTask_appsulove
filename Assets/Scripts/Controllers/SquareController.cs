@@ -8,6 +8,7 @@ namespace Controllers
     public class SquareController : BaseController<SquareModel, SquareView>
     {
         public Action<GameObject> OnDestroy;
+
         public SquareController(SquareModel model, SquareView view) : base(model, view)
         {
             view.OnCollision += Destroy;

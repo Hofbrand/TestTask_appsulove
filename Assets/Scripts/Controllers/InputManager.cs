@@ -6,7 +6,8 @@ namespace Controllers
 {
     public class InputManager
     {
-        private Action<List<Vector2>> OnInputHandled;
+        private Action<List<Vector2>> onInputHandled;
+
         public List<Vector2> TouchPositions = new();
 
         private Vector2 GetTouchPosition()
@@ -16,7 +17,7 @@ namespace Controllers
 
         public InputManager(CircleController circleController)
         {
-            OnInputHandled += circleController.StartMovement;
+            onInputHandled += circleController.StartMovement;
         }
 
         public void HandleInput(float deltaTIme)
@@ -34,7 +35,7 @@ namespace Controllers
                 }
                 else if (Input.GetTouch(0).phase == TouchPhase.Ended)
                 {
-                    OnInputHandled.Invoke(TouchPositions);
+                    onInputHandled.Invoke(TouchPositions);
                 }
             }
 

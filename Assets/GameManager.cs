@@ -6,8 +6,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private ScoreView scoreView;
-    private Action<float> OnUpdate;
 
+    private Action<float> onUpdate;
     private SaveLoadSystem saveLoadSystem;
     private InputManager input;
     private ScoreManager score;
@@ -28,11 +28,10 @@ public class GameManager : MonoBehaviour
         input = new InputManager(circleController);
         saveLoadSystem = new SaveLoadSystem();
 
-        OnUpdate += input.HandleInput;
-        OnUpdate += circleController.Update;
+        onUpdate += input.HandleInput;
+        onUpdate += circleController.Update;
         circleController.OnPositionChanged += score.UpdateDistance;
         squareSpawner.OnDestroySquare += score.UpdatePoints;
-
         saveLoadSystem.OnDataLoaded += score.UpdateData;
         score.OnDataChanged = saveLoadSystem.SaveData;
      
@@ -41,6 +40,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        OnUpdate.Invoke(Time.deltaTime);
+        onUpdate.Invoke(Time.deltaTime);
     }
 }

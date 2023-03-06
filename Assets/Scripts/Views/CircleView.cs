@@ -7,7 +7,7 @@ namespace Views
     public class CircleView : BaseView, IPointerClickHandler
     {
         public Action OnCircleClicked;
-        //private CircleController controller;
+       
         public void OnPointerClick(PointerEventData eventData)
         {
             OnCircleClicked.Invoke();

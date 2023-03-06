@@ -9,6 +9,8 @@ namespace Models
         public Vector2? Target { get; set; }
         public List<Vector2> Targets { get; set; }
         public float Distance { get; internal set; }
+        public float TotalDistance { get; internal set; }
+        public float ElapsedDistance { get; internal set; }
     }
 }
 

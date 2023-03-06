@@ -15,7 +15,7 @@ namespace Controllers
 
         protected override bool SpawnFilter()
         {
-            if (gameObjects.Count - 1 >= maxSquares)
+            if (gameObjects.Count + 1 >= maxSquares)
                 return false;
 
             return true;
@@ -26,7 +26,7 @@ namespace Controllers
             InvokeRepeating(nameof(Spawn), spawnDelay, spawnDelay);
         }
 
-        public void RemoveFromList(GameObject go)
+        private void RemoveFromList(GameObject go)
         {
             OnDestroySquare.Invoke(points);
             gameObjects.Remove(go.transform);

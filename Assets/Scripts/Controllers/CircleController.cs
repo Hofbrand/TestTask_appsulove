@@ -10,11 +10,12 @@ namespace Controllers
     {
         public Action<float> OnPositionChanged;
         private MovementBehaviour moveBehaviour;
-        private float speed = 3f;
+        private float maxSpeed = 5f;
+        private float currentSpeed = 0f;
        
         public CircleController(CircleModel model, CircleView view) : base(model, view) 
         {
-            moveBehaviour = new MovementBehaviour(speed);
+            moveBehaviour = new MovementBehaviour();
             view.OnCircleClicked += Stop;
         }
 
@@ -25,24 +26,27 @@ namespace Controllers
         }
 
         private void MoveCircle(float deltaTime)
-        {
-            if (!model.IsMoving)
+        {     
+
+            if (model.IsMoving && model.Targets != null && model.Targets.Count > 0 && model.Target == null)
             {
-                model.Target = null;
-                model.IsMoving = true;
-            }
-            if (model.Targets != null && model.Targets.Count > 0 && model.Target == null)
-            {
+                model.ElapsedDistance = 0;
                 model.Target = model.Targets[0];
+                CountTotalDistance();
             }
+
             if (model.Target != null)
             {
+              
                 var previousPosition = view.transform.position;
-                var currentPosition = moveBehaviour.Move(view.transform.position, deltaTime, model.Target.Value);
-                view.UpdatePosition(currentPosition);
-                OnPositionChanged.Invoke(Vector2.Distance(previousPosition, currentPosition));
+                var currentPosition = moveBehaviour.Move(view.transform.position, deltaTime, model.Target.Value, GetSpeed(model.ElapsedDistance));
 
-                if (currentPosition == model.Target && model.Targets != null)
+                OnPositionChanged.Invoke(Vector2.Distance(previousPosition, currentPosition));
+                model.ElapsedDistance += Vector2.Distance(previousPosition, currentPosition);
+
+                view.UpdatePosition(currentPosition);
+
+                if (Vector2.Distance(currentPosition, model.Target.Value) < 0.1f && model.Targets != null)
                 {
                     model.Targets.RemoveAt(0);
                     if (model.Targets.Count > 0)
@@ -52,19 +56,40 @@ namespace Controllers
                     else
                     {
                         model.Target = null;
+                        model.IsMoving = false;
                     }
                 }
+            }
+        }
+
+        private void CountTotalDistance()
+        {
+            model.TotalDistance = 0;
+            model.TotalDistance += Vector2.Distance(view.transform.position, model.Target.Value);
+
+            for (int i = 0; i < model.Targets.Count - 1; i++)
+            {
+                model.TotalDistance += Vector2.Distance(model.Targets[i], model.Targets[i + 1]);
+            }   
+        }
+
+        private float GetSpeed(float elapsedDistance)
+        {
+            if (elapsedDistance <= model.TotalDistance / 2f)
+            {
+                return  Mathf.Lerp( 0.2f , maxSpeed, elapsedDistance / model.TotalDistance * 2f);
+            }
+            else
+            {
+                return  Mathf.Lerp( maxSpeed, 0.2f, (elapsedDistance - model.TotalDistance / 2f) / model.TotalDistance * 2f);
             }
         }
 
         public void Stop()
         {
             model.Target = null;
-            if(model.Targets != null)
-            {
-                model.IsMoving = false;
-                model.Targets.Clear();
-            }
+            model.IsMoving = false;
+            model.Targets.Clear();
         }
 
         public void Update(float deltaTime)
